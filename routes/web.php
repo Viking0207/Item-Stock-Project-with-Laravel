@@ -6,27 +6,31 @@ Route::get('/', function () {
     return view('Login');
 });
 
-Route::get('/home', function () {
+Route::get('/Home', function () {
     return view('Home');
 });
 
-Route::get('/kasir', function () {
+Route::get('/Kasir', function () {
     return view('Kasir/Cashier_page');
 });
 
-Route::get('/terima', function () {
+Route::get('/Karyawan', function () {
+    return view('Karyawan/MenuKaryawan_page');
+});
+
+Route::get('/Terima', function () {
     return view('Karyawan/Receiving_page');
 });
 
-Route::get('/stok', function () {
+Route::get('/Stok', function () {
     return view('Karyawan/Stock_page');
 });
 
-Route::get('/musnah', function () {
+Route::get('/Musnah', function () {
     return view('Karyawan/Destroy_page');
 });
 
-Route::get('/diskon', function () {
+Route::get('/Diskon', function () {
     return view('Karyawan/Discount_page');
 });
 

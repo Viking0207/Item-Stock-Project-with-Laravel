@@ -28,7 +28,7 @@
         </form>
 
         <div class="text-center mt-2">
-            <small class="text-muted">Belum punya akun atau lupa password? <a href="#" class="text-decoration-none">Hubungi Nomor +628-123-456-789</a></small>
+            <small class="text-muted">Belum punya akun atau Lupa password? <a href="#" class="text-decoration-none">Hubungi Nomor +628-123-456-789</a></small>
         </div>
 
     </div>
