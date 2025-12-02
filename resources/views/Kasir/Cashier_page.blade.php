@@ -66,6 +66,7 @@
                         <thead class="table-primary">
                             <tr>
                                 <th>No</th>
+                                <th>Kode PLU</th>
                                 <th>Nama Barang</th>
                                 <th>Harga</th>
                                 <th>Jumlah</th>
@@ -77,6 +78,7 @@
                             <!-- Dummy data contoh tampilan -->
                             <tr>
                                 <td>1</td>
+                                <td>46****</td>
                                 <td>Aqua</td>
                                 <td>Rp 5.000</td>
                                 <td>2</td>
@@ -87,6 +89,7 @@
                             </tr>
                             <tr>
                                 <td>2</td>
+                                <td>43****</td>
                                 <td>Indomie</td>
                                 <td>Rp 3.000</td>
                                 <td>3</td>
