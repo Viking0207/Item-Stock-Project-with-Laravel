@@ -13,25 +13,30 @@
 <body class="bg-light">
 
     <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-warning mb-4 shadow">
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">
                 <i class="fa-solid fa-tags me-2"></i>Diskon Barang
             </a>
             <a href="/Karyawan" class="btn btn-light ms-auto">
-                Kembali <i class="fa-solid fa-arrow-right me-1"></i> 
+                Kembali <i class="fa-solid fa-arrow-right me-1"></i>
             </a>
         </div>
     </nav>
 
     <!-- FORM -->
-    <div class="container d-flex justify-content-center">
+    <div class="container d-flex justify-content-center mb-4">
         <div class="col-md-5">
             <div class="card shadow border-0 p-4">
 
                 <h5 class="text-center fw-bold mb-4">
                     <i class="fa-solid fa-percent text-warning me-2"></i> Form Diskon Barang
                 </h5>
+
+                <div class="mb-3">
+                    <label class="form-label">Kode PLU</label>
+                    <input type="number" id="nama" class="form-control" placeholder="Contoh: 46****" onkeydown="return blokSemuaSimbol(event)">
+                </div>
 
                 <div class="mb-3">
                     <label class="form-label">Nama Barang</label>
@@ -59,9 +64,9 @@
                 </div>
 
                 <div class="d-grid gap-2">
-                    <button class="btn btn-primary" onclick="simpan()">
+                    {{-- <button class="btn btn-primary" onclick="simpan()">
                         <i class="fa-solid fa-floppy-disk me-2"></i>Simpan Diskon
-                    </button>
+                    </button> --}}
 
                     <button class="btn btn-warning text-white" onclick="cetakLabel()">
                         <i class="fa-solid fa-print me-2"></i>Cetak Price Label
@@ -174,5 +179,30 @@
     </script>
 
 </body>
+
+<script>
+    function blokSemuaSimbol(e) {
+        const simbolTerlarang = ['e', '+', '-', '.', ','];
+        if (simbolTerlarang.includes(e.key.toLowerCase())) {
+            e.preventDefault();
+            return false;
+        }
+    }
+</script>
+
+<style>
+    /* Hilangkan spinner di Chrome, Edge, Safari */
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Hilangkan spinner di Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+</style>
+
 
 </html>

@@ -48,7 +48,7 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-semibold fs-5">Quantity</label>
+                            <label class="form-label fw-semibold fs-5">Kuantitas</label>
                             <input type="number" class="form-control form-control-lg rounded-3"
                                 placeholder="Masukan quantity">
                         </div>
