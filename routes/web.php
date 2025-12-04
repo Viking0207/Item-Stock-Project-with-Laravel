@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ReceivingController;
+use App\Models\Kategori;
+use App\Models\Stock;
 
 Route::get('/', function () {
     return view('Login');
@@ -18,9 +21,10 @@ Route::get('/Karyawan', function () {
     return view('Karyawan/MenuKaryawan_page');
 });
 
-Route::get('/Terima', function () {
-    return view('Karyawan/Receiving_page');
-});
+    Route::get('/terima', [ReceivingController::class, 'index'])->name('receiving.index');
+    Route::post('/terima', [ReceivingController::class, 'store'])->name('receiving.store');
+    Route::delete('/terima/{id}', [ReceivingController::class, 'destroy'])->name('receiving.destroy');
+
 
 Route::get('/Stok', function () {
     return view('Karyawan/Stock_page');
@@ -33,6 +37,3 @@ Route::get('/Musnah', function () {
 Route::get('/Diskon', function () {
     return view('Karyawan/Discount_page');
 });
-
-//contoh route controller
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

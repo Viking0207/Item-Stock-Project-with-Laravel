@@ -36,7 +36,7 @@
                     <div class="card-body text-center p-4">
                         <i class="fa fa-boxes-stacked fa-3x text-primary mb-3"></i>
                         <h6 class="fw-bold">Penerimaan Barang</h6>
-                        <a href="/Terima" class="btn btn-primary mt-2">
+                        <a href="/terima" class="btn btn-primary mt-2">
                             Buka Menu <i class="fa fa-arrow-right ms-2"></i>
                         </a>
                     </div>
