@@ -23,7 +23,7 @@
         <div class="container d-flex justify-content-center pt-3 pb-4">
             <div class="card shadow-sm p-4 rounded-4" style="width: 1100px;">
                 <div class="card-body">
-                    <form action="{{ route('receiving.store') }}" method="POST" id="stockForm">
+                    <form action="{{ route('receiving.add') }}" method="POST" id="stockForm">
                         @csrf
                         <div class="mb-3">
                             <label class="form-label fw-semibold fs-5">PLU / Kode Barang</label>
@@ -34,7 +34,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold fs-5">Nama Barang</label>
                             <input type="text" id="nama" class="form-control form-control-lg rounded-3"
-                                placeholder="Masukkan nama barang">
+                                placeholde r="Masukkan nama barang">
                         </div>
 
                         <div class="mb-3">
@@ -92,9 +92,9 @@
                         <tbody id="stockTableBody">
                             @foreach ($stocks->groupBy('kategori.nama_kategori') as $kategori => $items)
                                 <!-- Header group kategori -->
-                                <tr class="table-info">
+                                {{-- <tr class="table-info">
                                     <td colspan="7" class="fw-bold text-start ps-3">{{ $kategori }}</td>
-                                </tr>
+                                </tr> --}}
 
                                 <!-- List barang dalam kategori tersebut -->
                                 @foreach ($items as $i => $data)
@@ -108,7 +108,7 @@
                                             {{ number_format($data->harga_terakhir * $data->total_quantity, 0, ',', '.') }}
                                         </td>
                                         <td>
-                                            <form action="/receiving/{{ $data->id }}" method="POST"
+                                            <form action="{{ route('receiving.destroy', $data->id) }}" method="POST"
                                                 onsubmit="return confirm('Yakin hapus?')">
                                                 @csrf
                                                 @method('DELETE')
@@ -228,28 +228,56 @@
 
     let tempStocks = [] // << simpan sementara di browser
 
-    function addStock() {
-        let plu = document.getElementById('plu').value.trim()
-        let nama = document.getElementById('nama').value.trim()
-        let expired = document.getElementById('expired').value
-        let harga = document.getElementById('harga').value.replace(/[^0-9]/g, "")
-        let qty = document.getElementById('qty').value
+    async function addStock() {
+        let plu = document.getElementById('plu').value.trim();
+        let nama = document.getElementById('nama').value.trim();
+        let harga = document.getElementById('harga').value.replace(/[^0-9]/g, "");
+        let qty = document.getElementById('qty').value;
 
-        if (!plu || !nama || !expired || !harga || !qty) {
-            alert("Isi semua data dulu lee!")
-            return
+        if (!plu || !nama || !harga || !qty) {
+            alert("Isi semua data dulu lee!");
+            return;
         }
 
-        tempStocks.push({
-            plu,
-            nama,
-            expired,
-            harga,
-            qty
-        })
-        renderTable()
-        document.getElementById('stockForm').reset()
+        let res = await fetch("{{ route('receiving.add') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({
+                plu_barang: plu,
+                nama_barang: nama,
+                qty: qty,
+                harga: harga
+            })
+        });
+
+        let data = await res.json();
+
+        if (data.success) {
+            alert("Data berhasil masuk ke STOCK!");
+
+            // Tambahkan ke tempStocks supaya tabel terupdate
+            tempStocks.push({
+                plu: plu,
+                nama: nama,
+                qty: Number(qty),
+                harga: Number(harga)
+            });
+
+            renderTable(); // update tabel di UI
+
+            // Reset form
+            document.getElementById('plu').value = '';
+            document.getElementById('nama').value = '';
+            document.getElementById('qty').value = '';
+            document.getElementById('harga').value = '';
+        } else {
+            alert("Gagal: " + (data.error || data.message));
+        }
     }
+
 
     function renderTable() {
         let body = document.getElementById('stockTableBody')
@@ -282,39 +310,24 @@
 
     // Konfirmasi ke DB
     async function submitKeDB() {
-        if (tempStocks.length === 0) {
-            alert("Data kosong lee!")
-            return
-        }
-
-        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        let res = await fetch("/terima", {
+        let res = await fetch("/terima/confirm", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRF-TOKEN": token
-            },
-            body: JSON.stringify({
-                stocks: tempStocks
-            })
-        })
-
-        let harga = document.getElementById('harga').value.replace(/[^0-9]/g, "")
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+            }
+        });
 
         let data = await res.json();
-        console.log(data);
-
 
         if (data.success) {
-            alert("Berhasil tersimpan ke database cuy!")
-            tempStocks = []
-            renderTable()
-            window.location.reload()
+            alert("Berhasil diproses ke kategori masing-masing!");
+            window.location.reload();
         } else {
-            alert("Gagal masuk database cuk!")
+            alert("Gagal cuy: " + data.message);
         }
     }
+
 
     // Fungsi cetak 
     function cetakBukti() {

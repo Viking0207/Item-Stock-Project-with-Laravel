@@ -16,6 +16,8 @@ class MakananBatch extends Model
         'quantity',
     ];
     
+    public $timestamps = true;
+
     public function Makanan()
     {
         return $this->belongsTo (Makanan::class);

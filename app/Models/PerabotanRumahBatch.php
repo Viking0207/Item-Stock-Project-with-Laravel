@@ -15,6 +15,8 @@ class PerabotanRumahBatch extends Model
         'price',
         'quantity',
     ];
+
+    public $timestamps = true;
     
     public function Perabotan_Rumah()
     {

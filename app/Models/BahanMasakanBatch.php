@@ -15,6 +15,8 @@ class BahanMasakanBatch extends Model
         'price',
         'quantity',
     ];
+
+    public $timestamps = true;
     
     public function Bahan_Masakan()
     {

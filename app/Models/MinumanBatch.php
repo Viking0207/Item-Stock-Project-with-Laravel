@@ -15,6 +15,8 @@ class MinumanBatch extends Model
         'price',
         'quantity',
     ];
+
+    public $timestamps = true;
     
     public function Minuman()
     {

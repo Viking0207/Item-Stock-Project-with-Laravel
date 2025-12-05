@@ -21,9 +21,10 @@ Route::get('/Karyawan', function () {
     return view('Karyawan/MenuKaryawan_page');
 });
 
-    Route::get('/terima', [ReceivingController::class, 'index'])->name('receiving.index');
-    Route::post('/terima', [ReceivingController::class, 'store'])->name('receiving.store');
-    Route::delete('/terima/{id}', [ReceivingController::class, 'destroy'])->name('receiving.destroy');
+Route::get('/terima', [ReceivingController::class, 'index'])->name('receiving.index');
+Route::post('/terima/add', [ReceivingController::class, 'addItem'])->name('receiving.add');
+Route::post('/terima/confirm', [ReceivingController::class, 'confirmAll'])->name('receiving.confirm');
+Route::delete('/terima/{id}', [ReceivingController::class, 'destroy'])->name('receiving.destroy');
 
 
 Route::get('/Stok', function () {

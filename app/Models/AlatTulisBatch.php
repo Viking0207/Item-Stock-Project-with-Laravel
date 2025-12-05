@@ -15,6 +15,8 @@ class AlatTulisBatch extends Model
         'price',
         'quantity',
     ];
+
+    public $timestamps = true;
     
     public function Alat_tulis()
     {

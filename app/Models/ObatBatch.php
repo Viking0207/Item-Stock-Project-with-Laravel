@@ -15,6 +15,8 @@ class ObatBatch extends Model
         'price',
         'quantity',
     ];
+
+    public $timestamps = true;
     
     public function Obat()
     {

@@ -15,6 +15,8 @@ class KosmetikBatch extends Model
         'price',
         'quantity',
     ];
+
+    public $timestamps = true;
     
     public function Kosmetik()
     {

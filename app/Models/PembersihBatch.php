@@ -15,6 +15,8 @@ class PembersihBatch extends Model
         'price',
         'quantity',
     ];
+
+    public $timestamps = true;
     
     public function Pembersih()
     {
