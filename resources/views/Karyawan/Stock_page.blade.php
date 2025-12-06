@@ -69,11 +69,11 @@
                     </table>
                 </div>
 
-                <div class="d-grid">
+                {{-- <div class="d-grid">
                     <button class="btn btn-dark" onclick="printHasil()">
                         <i class="fa fa-print me-2"></i>Cetak Rekap Hasil
                     </button>
-                </div>
+                </div> --}}
             </div>
 
             {{-- <!-- Info biar kebayang -->
@@ -83,50 +83,6 @@
     </div>
 
     <script>
-        // Simulasi data barang dari RAM
-        const databaseRam = [{
-                kode: "461234",
-                nama: "Chitato",
-                kategori: "Makanan",
-                stok: 120
-            },
-            {
-                kode: "468999",
-                nama: "Lays",
-                kategori: "Makanan",
-                stok: 87
-            },
-            {
-                kode: "461111",
-                nama: "Oreo",
-                kategori: "Makanan",
-                stok: 200
-            },
-            {
-                kode: "470123",
-                nama: "Aqua",
-                kategori: "Minuman",
-                stok: 500
-            },
-            {
-                kode: "470987",
-                nama: "Sprite",
-                kategori: "Minuman",
-                stok: 220
-            },
-            {
-                kode: "480123",
-                nama: "Kaos Distro",
-                kategori: "Fashion",
-                stok: 90
-            },
-            {
-                kode: "490100",
-                nama: "Kabel Charger",
-                kategori: "Elektronik",
-                stok: 300
-            }
-        ];
 
         // Perbaikan: koma yang hilang sebelumnya menyebabkan parse error
         const kategoriPrefix = {

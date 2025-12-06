@@ -62,7 +62,7 @@
                     <div class="card-body text-center p-4">
                         <i class="fa fa-trash-can fa-3x text-danger mb-3"></i>
                         <h6 class="fw-bold">Pemusnahan Barang</h6>
-                        <a href="/Musnah" class="btn btn-danger mt-2">
+                        <a href="/Destroy" class="btn btn-danger mt-2">
                             Buka Menu <i class="fa fa-arrow-right ms-2"></i>
                         </a>
                     </div>

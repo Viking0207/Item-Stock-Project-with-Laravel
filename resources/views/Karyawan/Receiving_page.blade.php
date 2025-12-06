@@ -331,7 +331,74 @@
 
     // Fungsi cetak 
     function cetakBukti() {
-        alert("Masih Maintanance nih bro!")
+        if (tempStocks.length === 0) {
+            alert("Belum ada data barang untuk dicetak!");
+            return;
+        }
+
+        let rows = "";
+        let grandTotal = 0;
+
+        tempStocks.forEach((item, i) => {
+            let total = item.harga * item.qty;
+            grandTotal += total;
+
+            rows += `
+            <tr>
+                <td>${i + 1}</td>
+                <td>${item.plu}</td>
+                <td>${item.nama}</td>
+                <td>Rp ${item.harga.toLocaleString("id-ID")}</td>
+                <td>${item.qty}</td>
+                <td>Rp ${total.toLocaleString("id-ID")}</td>
+            </tr>
+        `;
+        });
+
+        let printWindow = window.open("", "", "width=900,height=600");
+
+        printWindow.document.write(`
+        <html>
+        <head>
+            <title>Bukti Terima Barang</title>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+            <style>
+                body { padding: 30px; }
+                h4 { margin-bottom: 20px; }
+                table { font-size: 14px; }
+                .total { font-size: 16px; font-weight: bold; }
+            </style>
+        </head>
+        <body onload="window.print()">
+
+            <h4 class="text-center fw-bold">BUKTI TERIMA BARANG</h4>
+            <p class="text-center text-muted">Tanggal: ${new Date().toLocaleDateString("id-ID")}</p>
+
+            <table class="table table-bordered text-center align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>No</th>
+                        <th>PLU</th>
+                        <th>Nama Barang</th>
+                        <th>Harga</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rows}
+                    <tr class="table-success">
+                        <td colspan="5" class="text-end total">GRAND TOTAL</td>
+                        <td class="total">Rp ${grandTotal.toLocaleString("id-ID")}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </body>
+        </html>
+    `);
+
+        printWindow.document.close();
     }
 </script>
 

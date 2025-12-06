@@ -34,7 +34,7 @@ Route::get('/Stok', function () {
 });
 Route::get('/cek-stok/{plu}', [CekStokController::class, 'cek']);
 
-Route::get('/Musnah', function () {
+Route::get('/Destroy', function () {
     return view('Karyawan/Destroy_page');
 });
 
