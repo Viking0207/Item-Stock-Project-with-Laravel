@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReceivingController;
+use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\CekStokController;
 use App\Models\Kategori;
 use App\Models\Stock;
 
@@ -30,11 +32,14 @@ Route::delete('/terima/{id}', [ReceivingController::class, 'destroy'])->name('re
 Route::get('/Stok', function () {
     return view('Karyawan/Stock_page');
 });
+Route::get('/cek-stok/{plu}', [CekStokController::class, 'cek']);
 
 Route::get('/Musnah', function () {
     return view('Karyawan/Destroy_page');
 });
 
-Route::get('/Diskon', function () {
-    return view('Karyawan/Discount_page');
-});
+
+Route::get('/Diskon', [DiscountController::class, 'index'])
+    ->name('discount.page');
+
+Route::get('/api/diskon/{plu}', [DiscountController::class, 'cariBarang']);
