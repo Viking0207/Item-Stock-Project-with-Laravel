@@ -26,7 +26,8 @@ Route::post('/kasir/add', [KasirController::class, 'addToCart'])->name('kasir.ad
 Route::post('/kasir/checkout', [KasirController::class, 'checkout'])->name('kasir.checkout');
 Route::get('/kasir/search', [KasirController::class, 'searchPLU'])->name('kasir.searchPLU');
 Route::post('/kasir/submit', [KasirController::class, 'submit']);
-Route::get('/kasir/struk', [KasirController::class, 'printReceipt'])->name('kasir.printReceipt');
+Route::get('/kasir/struk/{id}', [KasirController::class, 'struk']);
+
 
 Route::get('/Karyawan', function () {
     return view('Karyawan/MenuKaryawan_page');

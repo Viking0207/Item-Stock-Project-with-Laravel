@@ -75,7 +75,7 @@
                             </tr>
                         </thead>
                         <tbody id="tableBody">
-                            >
+
 
                         </tbody>
                     </table>
@@ -108,6 +108,7 @@
 <script>
     let cart = [];
     let hargaAsli = 0;
+    let lastPLU = '';
 
     const plu = document.getElementById('plu');
     const nama = document.getElementById('nama');
@@ -115,38 +116,40 @@
     const qty = document.getElementById('qty');
     const table = document.getElementById('tableBody');
     const totalEl = document.getElementById('grandTotal');
-    const btnAdd = document.getElementById('btnTambah');
 
-    /* === AUTO FILL DARI PLU === */
-    plu.addEventListener('keyup', function() {
-        if (plu.value.length < 2) return;
+    /* ===== SEARCH PLU ===== */
+    plu.addEventListener('keyup', () => {
+        const kode = plu.value.trim();
 
-        fetch(`/kasir/search?plu=${plu.value}`)
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error('Response error');
-                }
-                return res.json();
-            })
+        if (kode.length < 2) return;
+        if (kode === lastPLU) return;
+
+        lastPLU = kode;
+
+        fetch(`/kasir/search?plu=${kode}`)
+            .then(res => res.json())
             .then(d => {
-                nama.value = d.nama_barang ?? '';
-
-                // simpan harga asli (number)
-                hargaAsli = Number(d.price_per_pcs);
-
-                // tampilkan harga versi UI (tanpa .00)
-                harga.value = hargaAsli.toLocaleString('id-ID');
+                if (d.status === 'ok') {
+                    nama.value = d.nama_barang;
+                    harga.value = d.price_per_pcs;
+                    hargaAsli = Number(d.price_per_pcs);
+                } else {
+                    nama.value = '';
+                    harga.value = '';
+                    hargaAsli = 0;
+                }
             })
             .catch(() => {
                 nama.value = '';
                 harga.value = '';
+                hargaAsli = 0;
             });
     });
 
-    /* === TAMBAH KE TABEL === */
-    btnAdd.addEventListener('click', function() {
-        if (!plu.value || !qty.value) {
-            alert('Lengkapi data');
+    /* ===== ADD CART ===== */
+    document.getElementById('btnTambah').addEventListener('click', () => {
+        if (!plu.value || !qty.value || hargaAsli <= 0) {
+            alert('Data tidak valid');
             return;
         }
 
@@ -157,15 +160,13 @@
             qty: Number(qty.value)
         });
 
-
         renderTable();
 
         plu.value = nama.value = harga.value = qty.value = '';
         hargaAsli = 0;
-
     });
 
-    /* === RENDER TABEL === */
+    /* ===== RENDER ===== */
     function renderTable() {
         table.innerHTML = '';
         let grand = 0;
@@ -174,60 +175,56 @@
             const total = item.harga * item.qty;
             grand += total;
 
-            table.innerHTML += `
-        <tr>
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
             <td>${i+1}</td>
             <td>${item.plu}</td>
             <td>${item.nama}</td>
             <td>Rp ${item.harga.toLocaleString()}</td>
             <td>${item.qty}</td>
             <td>Rp ${total.toLocaleString()}</td>
-            <td>
-                <button class="btn btn-danger btn-sm" onclick="hapus(${i})">
-                    Hapus
-                </button>
-            </td>
-        </tr>
+            <td><button class="btn btn-danger btn-sm">Hapus</button></td>
         `;
+
+            tr.querySelector('button').onclick = () => {
+                cart.splice(i, 1);
+                renderTable();
+            };
+
+            table.appendChild(tr);
         });
 
         totalEl.innerText = `Rp ${grand.toLocaleString()}`;
     }
 
-    function hapus(index) {
-        cart.splice(index, 1);
-        renderTable();
-    }
-
-    /* === Confirm data === */
+    /* ===== BAYAR ===== */
     document.getElementById('btnBayar').addEventListener('click', () => {
+        if (cart.length === 0) {
+            alert('Keranjang kosong');
+            return;
+        }
 
-    if (cart.length === 0) {
-        alert('Keranjang kosong');
-        return;
-    }
-
-    fetch('/kasir/submit', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ cart })
-    })
-    .then(res => res.json())
-    .then(res => {
-        alert(res.message);
-        cart = [];
-        renderTable();
-    })
-    .catch(err => {
-        alert('Gagal memproses transaksi');
-        console.error(err);
+        fetch('/kasir/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    cart
+                })
+            })
+            .then(res => res.json())
+            .then(res => {
+                alert(res.message);
+                window.open(`/kasir/struk/${res.transaksi_id}`, '_blank');
+                cart = [];
+                renderTable();
+            })
+            .catch(() => alert('Gagal transaksi'));
     });
-});
-
 </script>
+
 
 
 </html>

@@ -20,6 +20,6 @@ class MakananBatch extends Model
 
     public function makanan()
     {
-        return $this->belongsTo(Makanan::class, 'barang_id');
+        return $this->belongsTo(Makanan::class, 'barang_id', 'id');
     }
 }

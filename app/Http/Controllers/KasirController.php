@@ -18,28 +18,41 @@ class KasirController extends Controller
      */
     public function searchPLU(Request $request)
     {
-        $plu = $request->plu;
+        $plu = trim($request->plu);
 
-        // Cari di semua kategori (contoh hanya Makanan dulu)
+        // 1. Cari barang dari PLU
         $barang = Makanan::where('plu_barang', $plu)->first();
 
         if (!$barang) {
-            return response()->json(['error' => 'Barang tidak ditemukan'], 404);
+            return response()->json([
+                'status' => 'not_found',
+                'message' => 'Barang tidak ditemukan'
+            ]);
         }
 
-        // Ambil batch aktif (stok > 0) terbaru
-        $batch = $barang->activeBatches()->orderBy('id', 'desc')->first();
+        // 2. Ambil BATCH barang ini SAJA yang masih ada stok
+        $batch = MakananBatch::where('barang_id', $barang->id)
+            ->where('quantity', '>', 0)
+            ->orderBy('id', 'asc') // FIFO
+            ->first();
 
         if (!$batch) {
-            return response()->json(['error' => 'Stok habis'], 400);
+            return response()->json([
+                'status' => 'out_of_stock',
+                'nama_barang' => $barang->nama_barang,
+                'message' => 'Stok barang ini habis'
+            ]);
         }
 
+        // 3. KIRIM DATA VALID
         return response()->json([
-            'id' => $barang->id,
+            'status' => 'ok',
             'nama_barang' => $barang->nama_barang,
-            'price_per_pcs' => $batch->price,
+            'price_per_pcs' => (int) $batch->price // harga PER PCS
         ]);
     }
+
+
 
     /**
      * Tambah item ke session kasir
@@ -135,56 +148,84 @@ class KasirController extends Controller
     {
         $cart = $request->cart;
 
-        DB::transaction(function () use ($cart) {
+        if (!$cart || count($cart) == 0) {
+            return response()->json(['message' => 'Keranjang kosong'], 400);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $transaksiId = DB::table('transaksi')->insertGetId([
+                'grand_total' => collect($cart)->sum(fn($i) => $i['harga'] * $i['qty']),
+                'created_at' => now()
+            ]);
 
             foreach ($cart as $item) {
 
-                // 1. Ambil barang kategori
-                $makanan = Makanan::where('plu_barang', $item['plu'])->lockForUpdate()->firstOrFail();
+                $barang = Makanan::where('plu_barang', trim($item['plu']))
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
-                // 2. Kurangi stok kategori
-                if ($makanan->total_quantity < $item['qty']) {
-                    throw new \Exception('Stok tidak cukup');
+                if ($barang->total_quantity < $item['qty']) {
+                    throw new \Exception("Stok {$barang->nama_barang} tidak cukup");
                 }
 
-                $makanan->decrement('total_quantity', $item['qty']);
+                $qty = $item['qty'];
 
-                // 3. Kurangi stok batch (FIFO by expired)
-                $sisa = $item['qty'];
-
-                $batches = MakananBatch::where('plu_barang', $item['plu'])
+                $batches = MakananBatch::where('barang_id', $barang->id)
                     ->where('quantity', '>', 0)
-                    ->orderBy('expired_date')
-                    ->lockForUpdate()
+                    ->orderBy('id')
                     ->get();
 
+
                 foreach ($batches as $batch) {
-                    if ($sisa <= 0) break;
+                    if ($qty <= 0) break;
 
-                    if ($batch->quantity >= $sisa) {
-                        $batch->decrement('quantity', $sisa);
-                        $sisa = 0;
-                    } else {
-                        $sisa -= $batch->quantity;
-                        $batch->update(['quantity' => 0]);
-                    }
+                    $pakai = min($batch->quantity, $qty);
+                    $batch->quantity -= $pakai;
+                    $batch->save();
+
+                    DB::table('transaksi_detail')->insert([
+                        'transaksi_id' => $transaksiId,
+                        'plu' => $item['plu'],
+                        'nama_barang' => $item['nama'],
+                        'harga' => $item['harga'],
+                        'qty' => $pakai,
+                        'subtotal' => $pakai * $item['harga']
+                    ]);
+
+                    $qty -= $pakai;
                 }
-            }
-        });
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Transaksi berhasil'
-        ]);
+                // ✅ INI YANG KAMU LUPA
+                $barang->total_quantity -= $item['qty'];
+                $barang->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Transaksi berhasil',
+                'transaksi_id' => $transaksiId
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Gagal transaksi',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
+
 
     /**
      * Cetak struk
      */
-    public function printReceipt()
+    public function struk($id)
     {
-        $cart = Session::get('kasir_cart', []);
-        // Bisa return view atau PDF
-        return view('kasir.struk', compact('cart'));
+        $transaksi = DB::table('transaksi')->where('id', $id)->first();
+        $details = DB::table('transaksi_detail')->where('transaksi_id', $id)->get();
+
+        return view('kasir.struk', compact('transaksi', 'details'));
     }
 }
