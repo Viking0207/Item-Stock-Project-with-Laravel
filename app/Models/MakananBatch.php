@@ -15,12 +15,11 @@ class MakananBatch extends Model
         'price',
         'quantity',
     ];
-    
+
     public $timestamps = true;
 
-    public function Makanan()
+    public function makanan()
     {
-        return $this->belongsTo (Makanan::class);
+        return $this->belongsTo(Makanan::class, 'barang_id');
     }
-    
 }

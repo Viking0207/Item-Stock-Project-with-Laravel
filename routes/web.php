@@ -1,11 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\KasirController;
 use App\Http\Controllers\ReceivingController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\CekStokController;
-use App\Models\Kategori;
-use App\Models\Stock;
+// use App\Models\Kategori;
+// use App\Models\Stock;
 
 Route::get('/', function () {
     return view('Login');
@@ -15,9 +16,16 @@ Route::get('/Home', function () {
     return view('Home');
 });
 
-Route::get('/Kasir', function () {
+
+Route::get('/kasir', function () {
     return view('Kasir/Cashier_page');
-});
+})->name('kasir.page');
+
+Route::get('/kasir/cart', [KasirController::class, 'getCart'])->name('kasir.getCart');
+Route::post('/kasir/add', [KasirController::class, 'addToCart'])->name('kasir.addToCart');
+Route::post('/kasir/checkout', [KasirController::class, 'checkout'])->name('kasir.checkout');
+Route::get('/kasir/search', [KasirController::class, 'searchPLU'])->name('kasir.searchPLU');
+Route::get('/kasir/struk', [KasirController::class, 'printReceipt'])->name('kasir.printReceipt');
 
 Route::get('/Karyawan', function () {
     return view('Karyawan/MenuKaryawan_page');

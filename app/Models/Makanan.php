@@ -17,12 +17,12 @@ class Makanan extends Model
 
     public function batches()
     {
-        return $this->hasMany(MakananBatch::class);
+        return $this->hasMany(MakananBatch::class, 'barang_id');
     }
 
     public function activeBatches()
     {
-        return $this->hasMany(MakananBatch::class)
-                    ->where('quantity', '>', 0);    
-    }   
+        return $this->hasMany(MakananBatch::class, 'barang_id')
+            ->where('quantity', '>', 0);
+    }
 }

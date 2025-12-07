@@ -40,7 +40,7 @@
 
             <!-- Menu Kasir -->
             <div class="col-12 col-md-4" data-aos="zoom-in" data-aos-delay="350">
-                <a href="/Kasir" class="text-decoration-none">
+                <a href="/kasir" class="text-decoration-none">
                     <div class="card menu-card border-0 shadow rounded-4 p-3">
                         <div class="card-body">
                             <div class="icon-box bg-warning bg-opacity-10 text-warning mx-auto">

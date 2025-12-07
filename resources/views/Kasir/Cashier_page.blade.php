@@ -15,7 +15,7 @@
         <div class="d-flex justify-content-end mt-3">
             <a href="javascript:history.back()"
                 class="btn btn-outline-primary d-inline-flex align-items-center gap-2 px-3 rounded-3">
-                Kembali <i class="fa-solid fa-arrow-right"></i> 
+                Kembali <i class="fa-solid fa-arrow-right"></i>
             </a>
         </div>
 
@@ -26,26 +26,26 @@
                     <form>
                         <div class="mb-3">
                             <label class="form-label fw-semibold fs-5">PLU / Kode Barang</label>
-                            <input type="text" class="form-control form form-control-lg rounded-3"
-                                placeholder="Masukkan PLU atau kode barang">
+                            <input type="text" id="plu" class="form-control form-control-lg"
+                                placeholder="Masukkan Kode PLU">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold fs-5">Nama Barang</label>
-                            <input type="text" class="form-control form-control-lg rounded-3" placeholder="Masukkan nama barang">
+                            <input type="text" id="nama" class="form-control form-control-lg" readonly>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold fs-5">Harga</label>
-                            <input type="number" class="form-control form-control-lg rounded-3" placeholder="Masukkan harga barang">
+                            <input type="number" id="harga" class="form-control form-control-lg" readonly>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-semibold fs-5">Jumlah</label>
-                            <input type="number" class="form-control form-control-lg rounded-3" placeholder="Masukan quantity">
+                            <input type="number" id="qty" class="form-control form-control-lg">
                         </div>
 
-                        <button type="button" class="btn btn-primary btn-lg w-100 rounded-3">
+                        <button type="button" id="btnTambah" class="btn btn-primary btn-lg w-100 rounded-3">
                             <i class="fa-solid fa-plus me-2"></i> Tambah ke Tabel
                         </button>
 
@@ -74,37 +74,16 @@
                                 <th>Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Dummy data contoh tampilan -->
-                            <tr>
-                                <td>1</td>
-                                <td>46****</td>
-                                <td>Aqua</td>
-                                <td>Rp 5.000</td>
-                                <td>2</td>
-                                <td>Rp 10.000</td>
-                                <td>
-                                    <button class="btn btn-danger btn-sm rounded-3">Hapus</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>43****</td>
-                                <td>Indomie</td>
-                                <td>Rp 3.000</td>
-                                <td>3</td>
-                                <td>Rp 9.000</td>
-                                <td>
-                                    <button class="btn btn-danger btn-sm rounded-3">Hapus</button>
-                                </td>
-                            </tr>
+                        <tbody id="tableBody">
+                            >
+
                         </tbody>
                     </table>
                 </div>
 
                 <!-- TOTAL BELANJA DUMMY VIEW -->
                 <div class="d-flex justify-content-end mt-3">
-                    <h6 class="fw-bold">Grand Total: <span class="text-success">Rp 19.000</span></h6>
+                    <h6 class="fw-bold">Grand Total: <span class="text-success" id="grandTotal">Rp 19.000</span></h6>
                 </div>
             </div>
         </div>
@@ -122,10 +101,104 @@
             </button>
         </div>
 
-
-
     </div>
 
 </body>
+
+<script>
+    let cart = [];
+    let hargaAsli = 0;
+
+    const plu = document.getElementById('plu');
+    const nama = document.getElementById('nama');
+    const harga = document.getElementById('harga');
+    const qty = document.getElementById('qty');
+    const table = document.getElementById('tableBody');
+    const totalEl = document.getElementById('grandTotal');
+    const btnAdd = document.getElementById('btnTambah');
+
+    /* === AUTO FILL DARI PLU === */
+    plu.addEventListener('keyup', function() {
+        if (plu.value.length < 2) return;
+
+        fetch(`/kasir/search?plu=${plu.value}`)
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error('Response error');
+                }
+                return res.json();
+            })
+            .then(d => {
+                nama.value = d.nama_barang ?? '';
+
+                // simpan harga asli (number)
+                hargaAsli = Number(d.price_per_pcs);
+
+                // tampilkan harga versi UI (tanpa .00)
+                harga.value = hargaAsli.toLocaleString('id-ID');
+            })
+            .catch(() => {
+                nama.value = '';
+                harga.value = '';
+            });
+    });
+
+    /* === TAMBAH KE TABEL === */
+    btnAdd.addEventListener('click', function() {
+        if (!plu.value || !qty.value) {
+            alert('Lengkapi data');
+            return;
+        }
+
+        cart.push({
+            plu: plu.value,
+            nama: nama.value,
+            harga: hargaAsli,
+            qty: Number(qty.value)
+        });
+
+
+        renderTable();
+
+        plu.value = nama.value = harga.value = qty.value = '';
+        hargaAsli = 0;
+
+    });
+
+    /* === RENDER TABEL === */
+    function renderTable() {
+        table.innerHTML = '';
+        let grand = 0;
+
+        cart.forEach((item, i) => {
+            const total = item.harga * item.qty;
+            grand += total;
+
+            table.innerHTML += `
+        <tr>
+            <td>${i+1}</td>
+            <td>${item.plu}</td>
+            <td>${item.nama}</td>
+            <td>Rp ${item.harga.toLocaleString()}</td>
+            <td>${item.qty}</td>
+            <td>Rp ${total.toLocaleString()}</td>
+            <td>
+                <button class="btn btn-danger btn-sm" onclick="hapus(${i})">
+                    Hapus
+                </button>
+            </td>
+        </tr>
+        `;
+        });
+
+        totalEl.innerText = `Rp ${grand.toLocaleString()}`;
+    }
+
+    function hapus(index) {
+        cart.splice(index, 1);
+        renderTable();
+    }
+</script>
+
 
 </html>
