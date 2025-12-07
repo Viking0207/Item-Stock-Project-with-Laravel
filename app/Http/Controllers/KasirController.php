@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 
 // Import semua kategori
 use App\Models\Makanan;
@@ -127,6 +128,54 @@ class KasirController extends Controller
         Session::forget('kasir_cart');
 
         return response()->json(['success' => true, 'message' => 'Transaksi berhasil']);
+    }
+
+
+    public function submit(Request $request)
+    {
+        $cart = $request->cart;
+
+        DB::transaction(function () use ($cart) {
+
+            foreach ($cart as $item) {
+
+                // 1. Ambil barang kategori
+                $makanan = Makanan::where('plu_barang', $item['plu'])->lockForUpdate()->firstOrFail();
+
+                // 2. Kurangi stok kategori
+                if ($makanan->total_quantity < $item['qty']) {
+                    throw new \Exception('Stok tidak cukup');
+                }
+
+                $makanan->decrement('total_quantity', $item['qty']);
+
+                // 3. Kurangi stok batch (FIFO by expired)
+                $sisa = $item['qty'];
+
+                $batches = MakananBatch::where('plu_barang', $item['plu'])
+                    ->where('quantity', '>', 0)
+                    ->orderBy('expired_date')
+                    ->lockForUpdate()
+                    ->get();
+
+                foreach ($batches as $batch) {
+                    if ($sisa <= 0) break;
+
+                    if ($batch->quantity >= $sisa) {
+                        $batch->decrement('quantity', $sisa);
+                        $sisa = 0;
+                    } else {
+                        $sisa -= $batch->quantity;
+                        $batch->update(['quantity' => 0]);
+                    }
+                }
+            }
+        });
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Transaksi berhasil'
+        ]);
     }
 
     /**

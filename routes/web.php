@@ -25,6 +25,7 @@ Route::get('/kasir/cart', [KasirController::class, 'getCart'])->name('kasir.getC
 Route::post('/kasir/add', [KasirController::class, 'addToCart'])->name('kasir.addToCart');
 Route::post('/kasir/checkout', [KasirController::class, 'checkout'])->name('kasir.checkout');
 Route::get('/kasir/search', [KasirController::class, 'searchPLU'])->name('kasir.searchPLU');
+Route::post('/kasir/submit', [KasirController::class, 'submit']);
 Route::get('/kasir/struk', [KasirController::class, 'printReceipt'])->name('kasir.printReceipt');
 
 Route::get('/Karyawan', function () {

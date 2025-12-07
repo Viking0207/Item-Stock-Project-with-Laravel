@@ -95,7 +95,7 @@
                 <i class="fa-solid fa-receipt"></i> Cetak Struk
             </button>
 
-            <button type="button"
+            <button type="button" id="btnBayar"
                 class="btn btn-success rounded-3 px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
                 <i class="fa-solid fa-check"></i> Bayar Pesanan
             </button>
@@ -198,6 +198,35 @@
         cart.splice(index, 1);
         renderTable();
     }
+
+    /* === Confirm data === */
+    document.getElementById('btnBayar').addEventListener('click', () => {
+
+    if (cart.length === 0) {
+        alert('Keranjang kosong');
+        return;
+    }
+
+    fetch('/kasir/submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ cart })
+    })
+    .then(res => res.json())
+    .then(res => {
+        alert(res.message);
+        cart = [];
+        renderTable();
+    })
+    .catch(err => {
+        alert('Gagal memproses transaksi');
+        console.error(err);
+    });
+});
+
 </script>
 
 
