@@ -83,18 +83,13 @@
 
                 <!-- TOTAL BELANJA DUMMY VIEW -->
                 <div class="d-flex justify-content-end mt-3">
-                    <h6 class="fw-bold">Grand Total: <span class="text-success" id="grandTotal">Rp 19.000</span></h6>
+                    <h6 class="fw-bold">Grand Total: <span class="text-success" id="grandTotal">Rp </span></h6>
                 </div>
             </div>
         </div>
 
         <!-- Tombol Proses Terima Barang -->
         <div class="d-flex justify-content-end mt-4 gap-3">
-            <button type="button"
-                class="btn btn-warning rounded-3 px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
-                <i class="fa-solid fa-receipt"></i> Cetak Struk
-            </button>
-
             <button type="button" id="btnBayar"
                 class="btn btn-success rounded-3 px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
                 <i class="fa-solid fa-check"></i> Bayar Pesanan
@@ -108,8 +103,6 @@
 <script>
     let cart = [];
     let hargaAsli = 0;
-    let lastPLU = '';
-
     const plu = document.getElementById('plu');
     const nama = document.getElementById('nama');
     const harga = document.getElementById('harga');
@@ -117,14 +110,10 @@
     const table = document.getElementById('tableBody');
     const totalEl = document.getElementById('grandTotal');
 
-    /* ===== SEARCH PLU ===== */
+    // Auto-fill
     plu.addEventListener('keyup', () => {
         const kode = plu.value.trim();
-
         if (kode.length < 2) return;
-        if (kode === lastPLU) return;
-
-        lastPLU = kode;
 
         fetch(`/kasir/search?plu=${kode}`)
             .then(res => res.json())
@@ -137,6 +126,7 @@
                     nama.value = '';
                     harga.value = '';
                     hargaAsli = 0;
+                    if (d.message) alert(d.message);
                 }
             })
             .catch(() => {
@@ -146,58 +136,51 @@
             });
     });
 
-    /* ===== ADD CART ===== */
+    // Tambah ke tabel
     document.getElementById('btnTambah').addEventListener('click', () => {
         if (!plu.value || !qty.value || hargaAsli <= 0) {
-            alert('Data tidak valid');
+            alert('Data belum valid');
             return;
         }
-
         cart.push({
             plu: plu.value,
             nama: nama.value,
             harga: hargaAsli,
             qty: Number(qty.value)
         });
-
         renderTable();
-
         plu.value = nama.value = harga.value = qty.value = '';
         hargaAsli = 0;
     });
 
-    /* ===== RENDER ===== */
+    // Render tabel
     function renderTable() {
         table.innerHTML = '';
         let grand = 0;
-
         cart.forEach((item, i) => {
             const total = item.harga * item.qty;
             grand += total;
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-            <td>${i+1}</td>
-            <td>${item.plu}</td>
-            <td>${item.nama}</td>
-            <td>Rp ${item.harga.toLocaleString()}</td>
-            <td>${item.qty}</td>
-            <td>Rp ${total.toLocaleString()}</td>
-            <td><button class="btn btn-danger btn-sm">Hapus</button></td>
+            table.innerHTML += `
+            <tr>
+                <td>${i+1}</td>
+                <td>${item.plu}</td>
+                <td>${item.nama}</td>
+                <td>${item.harga.toLocaleString()}</td>
+                <td>${item.qty}</td>
+                <td>${total.toLocaleString()}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="hapus(${i})">Hapus</button></td>
+            </tr>
         `;
-
-            tr.querySelector('button').onclick = () => {
-                cart.splice(i, 1);
-                renderTable();
-            };
-
-            table.appendChild(tr);
         });
-
-        totalEl.innerText = `Rp ${grand.toLocaleString()}`;
+        totalEl.innerText = grand.toLocaleString();
     }
 
-    /* ===== BAYAR ===== */
+    function hapus(index) {
+        cart.splice(index, 1);
+        renderTable();
+    }
+
+    // Bayar
     document.getElementById('btnBayar').addEventListener('click', () => {
         if (cart.length === 0) {
             alert('Keranjang kosong');
@@ -216,12 +199,18 @@
             })
             .then(res => res.json())
             .then(res => {
-                alert(res.message);
-                window.open(`/kasir/struk/${res.transaksi_id}`, '_blank');
-                cart = [];
-                renderTable();
+                if (res.transaksi_id) {
+                    alert(res.message);
+                    window.open(`/kasir/struk/${res.transaksi_id}`, '_blank');
+                    cart = [];
+                    renderTable();
+                } else {
+                    alert(res.message);
+                }
             })
-            .catch(() => alert('Gagal transaksi'));
+            .catch(() => {
+                alert('Gagal memproses transaksi');
+            });
     });
 </script>
 
