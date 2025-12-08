@@ -53,7 +53,7 @@
 
             <!-- Hasil Rekomendasi (RAM) -->
             <div class="card shadow border-0 bg-white mt-4 p-3">
-                <h6 class="text-center fw-bold text-success mb-3">Daftar Barang Serupa</h6>
+                <h6 class="text-center fw-bold text-success mb-3">Daftar Barang</h6>
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover text-center align-middle">
                         <thead class="table-success">

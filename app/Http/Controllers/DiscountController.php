@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -42,7 +41,7 @@ class DiscountController extends Controller
 
             if (!$barang) continue;
 
-            // ✅ AMBIL DARI BATCH (PER PCS)
+            // Ambil data dari tabel Batch
             $batch = DB::table('batch_tb_makanan')
                 ->where('plu_barang', $plu)
                 ->where('quantity', '>', 0)
@@ -57,7 +56,7 @@ class DiscountController extends Controller
 
             return response()->json([
                 'nama'  => $barang->nama_barang,
-                'harga' => (int) $batch->price, // ✅ PER PCS
+                'harga' => (int) $batch->price, // Per-satuan
             ]);
         }
 

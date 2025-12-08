@@ -6,8 +6,6 @@ use App\Http\Controllers\ReceivingController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\CekStokController;
 use App\Http\Controllers\MakananDestroyController;
-// use App\Models\Kategori;
-// use App\Models\Stock;
 
 Route::get('/', function () {
     return view('Login');

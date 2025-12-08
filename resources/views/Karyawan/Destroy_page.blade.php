@@ -33,7 +33,7 @@
 
                 <div class="mb-3">
                     <label class="form-label">Kode PLU</label>
-                    <input type="text" id="plu" class="form-control" />
+                    <input type="text" id="plu" class="form-control" placeholder="Contoh: 461234" />
                 </div>
 
                 <div class="mb-3">

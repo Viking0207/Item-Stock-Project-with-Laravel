@@ -28,13 +28,13 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold fs-5">PLU / Kode Barang</label>
                             <input type="text" id="plu" class="form-control form form-control-lg rounded-3"
-                                placeholder="Masukkan PLU atau kode barang">
+                                placeholder="Masukkan PLU produk, misal: 461234">
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold fs-5">Nama Barang</label>
                             <input type="text" id="nama" class="form-control form-control-lg rounded-3"
-                                placeholde r="Masukkan nama barang">
+                                placeholder="Masukkan nama barang">
                         </div>
 
                         <div class="mb-3">
@@ -43,7 +43,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-semibold fs-5">Harga Barang Per-pcs</label>
+                            <label class="form-label fw-semibold fs-5">Harga Barang Per-Satuan</label>
                             <input type="text" id="harga" class="form-control form-control-lg rounded-3"
                                 placeholder="Masukkan harga barang" oninput="formatRupiah(this)">
                         </div>
@@ -51,7 +51,7 @@
                         <div class="mb-4">
                             <label class="form-label fw-semibold fs-5">Kuantitas</label>
                             <input type="number" id="qty" class="form-control form-control-lg rounded-3"
-                                placeholder="Masukan quantity">
+                                placeholder="Masukan kuantitas">
                         </div>
 
                         <button type="button" onclick="addStock()" class="btn btn-primary btn-lg w-100 rounded-3">
@@ -121,7 +121,7 @@
 
                             <!-- Grand Total semu di UI -->
                             <tr class="table-success">
-                                <td colspan="5" class="fw-bold text-center">Grand Total</td>
+                                <td colspan="5" class="fw-bold text-center">Harga Total</td>
                                 <td class="fw-bold" id="grandTotal">Rp
                                     {{ number_format($stocks->sum(fn($s) => $s->harga_terakhir * $s->total_quantity), 0, ',', '.') }}
                                 </td>
@@ -138,7 +138,7 @@
         <div class="d-flex justify-content-end mt-4 gap-3">
             <button type="submit" onclick="submitKeDB()"
                 class="btn btn-success rounded-3 px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
-                <i class="fa-solid fa-check"></i> Konfirmasi data stock
+                <i class="fa-solid fa-check"></i> Submit data stock
             </button>
         </div>
     </div>

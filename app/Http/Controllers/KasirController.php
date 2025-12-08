@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 
 class KasirController extends Controller
@@ -30,7 +29,7 @@ class KasirController extends Controller
         'LainLain' => \App\Models\PerabotanRumahBatch::class
     ];
 
-    // Auto-fill PLU
+    // Auto isi PLU
     public function searchPLU(Request $request)
     {
         $plu = trim($request->plu);

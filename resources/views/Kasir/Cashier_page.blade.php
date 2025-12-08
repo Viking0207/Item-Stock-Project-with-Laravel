@@ -27,7 +27,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold fs-5">PLU / Kode Barang</label>
                             <input type="text" id="plu" class="form-control form-control-lg"
-                                placeholder="Masukkan Kode PLU">
+                                placeholder="Masukkan PLU produk, misal: 461234">
                         </div>
 
                         <div class="mb-3">
@@ -83,7 +83,7 @@
 
                 <!-- TOTAL BELANJA DUMMY VIEW -->
                 <div class="d-flex justify-content-end mt-3">
-                    <h6 class="fw-bold">Grand Total: <span class="text-success" id="grandTotal">Rp </span></h6>
+                    <h6 class="fw-bold">Harga Total: <span class="text-success" id="grandTotal">Rp </span></h6>
                 </div>
             </div>
         </div>
