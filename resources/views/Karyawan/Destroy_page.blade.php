@@ -57,7 +57,7 @@
                 </div>
             </div>
 
-            <!-- TABEL SEMENTARA (RAM) -->
+            <!-- TABEL Destroy -->
             <div class="card shadow border-0 mt-4 p-3">
                 <h6 class="text-center fw-bold text-danger mb-3">Tabel Destroy Barang</h6>
                 <div class="table-responsive">
@@ -90,61 +90,29 @@
 </body>
 
 <script>
-    const dataDestroy = []; // ini RAM-nya bro 😎
-
-    function blokSemua(e) {
-        const terlarang = ["e", "+", "-", ".", ","];
-        if (terlarang.includes(e.key.toLowerCase())) {
-            e.preventDefault();
-            return false;
-        }
-    }
-
-    // Fungsi render tabel
-    function renderTabel() {
-        const tbody = document.querySelector("#tabelDestroy tbody");
-        tbody.innerHTML = "";
-
-        dataDestroy.forEach((item, index) => {
-            tbody.innerHTML += `
-            <tr>
-                <td>${item.plu}</td>
-                <td>${item.nama}</td>
-                <td>${item.qty}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-danger" onclick="hapus(${index})">
-                        <i class="fa fa-x"></i>
-                    </button>
-                </td>
-            </tr>`;
-        });
-    }
-
+    const dataDestroy = [];
 
     function tambahTabel() {
-        const plu = document.getElementById("plu").value.trim();
-        const nama = document.getElementById("nama").value.trim();
-        const qty = parseInt(document.getElementById("qty").value);
+        const plu = document.getElementById('plu').value.trim();
+        const nama = document.getElementById('nama').value.trim();
+        const qty = parseInt(document.getElementById('qty').value);
 
         if (!plu || !nama || isNaN(qty) || qty < 1) {
             Swal.fire("Error!", "Mohon isi semua data dengan benar!", "error");
             return;
         }
 
-        // Ambil stok terbaru dari server
-        fetch(`/destroy/get-stock/${plu}`)
+        fetch(`/destroy/get-stock/${plu}`) // Hanya pakai PLU
             .then(res => res.json())
             .then(data => {
-                const stokTersisa = data.total_quantity; // total_quantity di tb_makanan
-                if (stokTersisa <= 0) {
+                if (data.total_quantity <= 0) {
                     Swal.fire("Error!", "Stok barang sudah habis!", "error");
                     return;
-                } else if (qty > stokTersisa) {
-                    Swal.fire("Error!", `Stok barang tidak mencukupi! Sisa stok: ${stokTersisa}`, "error");
+                } else if (qty > data.total_quantity) {
+                    Swal.fire("Error!", "Stok tidak mencukupi! Sisa stok: " + data.total_quantity, "error");
                     return;
                 }
 
-                // Jika lolos validasi, push ke RAM
                 dataDestroy.push({
                     plu,
                     nama,
@@ -154,10 +122,53 @@
             });
     }
 
+    function renderTabel() {
+        const tbody = document.querySelector("#tabelDestroy tbody");
+        tbody.innerHTML = "";
+        dataDestroy.forEach((item, i) => {
+            tbody.innerHTML += `<tr>
+            <td>${item.plu}</td>
+            <td>${item.nama}</td>
+            <td>${item.qty}</td>
+            <td><button class="btn btn-sm btn-outline-danger" onclick="hapus(${i})">
+                <i class="fa fa-x"></i>
+                </button><
+            </td>
+        </tr>`;
+        });
+    }
+
 
     function hapus(i) {
         dataDestroy.splice(i, 1);
-        renderTabel();
+        renderTabel()
+    }
+
+    function submitDestroy() {
+        if (dataDestroy.length === 0) {
+            Swal.fire("Error!", "Tidak ada barang untuk dimusnahkan!", "error");
+            return;
+        }
+        fetch("{{ route('destroy.submit') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({
+                    items: dataDestroy
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire("Sukses!", data.message, "success");
+                    dataDestroy.length = 0;
+                    renderTabel();
+                } else {
+                    Swal.fire("Error!", "Terjadi kesalahan saat submit!", "error");
+                }
+            });
     }
 
     function printTabel() {
@@ -224,50 +235,23 @@
         printWindow.document.close();
     }
 
-
-    // Auto-fill nama_barang berdasarkan PLU
+    // Auto-fill nama barang
     document.getElementById('plu').addEventListener('input', function() {
         const plu = this.value.trim();
         if (!plu) return;
-
         fetch(`/destroy/get-data/${plu}`)
             .then(res => res.json())
             .then(data => {
-                if (data.success) {
-                    document.getElementById('nama').value = data.nama_barang;
-                } else {
-                    document.getElementById('nama').value = '';
-                }
+                document.getElementById('nama').value = data.nama_barang || '';
             });
     });
 
-    // Submit destroy (mengosongkan tabel RAM setelah submit)
-    function submitDestroy() {
-        if (dataDestroy.length === 0) {
-            Swal.fire("Error!", "Tidak ada barang untuk dimusnahkan!", "error");
-            return;
+    function blokSemua(e) {
+        const terlarang = ["e", "+", "-", ".", ","];
+        if (terlarang.includes(e.key.toLowerCase())) {
+            e.preventDefault();
+            return false;
         }
-
-        fetch("{{ route('destroy.submit') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                },
-                body: JSON.stringify({
-                    items: dataDestroy
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire("Sukses!", data.message, "success");
-                    dataDestroy.length = 0; // Kosongkan tabel RAM
-                    renderTabel(); // Refresh tabel
-                } else {
-                    Swal.fire("Error!", "Terjadi kesalahan saat submit!", "error");
-                }
-            });
     }
 </script>
 

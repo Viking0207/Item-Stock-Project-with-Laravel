@@ -5,7 +5,7 @@ use App\Http\Controllers\KasirController;
 use App\Http\Controllers\ReceivingController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\CekStokController;
-use App\Http\Controllers\MakananDestroyController;
+use App\Http\Controllers\DestroyController;
 
 Route::get('/', function () {
     return view('Login');
@@ -44,11 +44,10 @@ Route::get('/Stok', function () {
 Route::get('/cek-stok/{plu}', [CekStokController::class, 'cek']);
 
 
-Route::get('/destroy', [MakananDestroyController::class, 'index'])->name('destroy.index');
-Route::post('/destroy', [MakananDestroyController::class, 'destroy'])->name('destroy.submit');
-Route::get('/destroy/get-data/{plu}', [MakananDestroyController::class, 'getDataByPLU'])->name('destroy.getData');
-Route::get('/destroy/get-stock/{plu}', [MakananDestroyController::class, 'getStockByPLU']);
-
+Route::get('/destroy', [DestroyController::class,'index'])->name('destroy.index');
+Route::get('/destroy/get-data/{plu}', [DestroyController::class,'getDataByPLU']);
+Route::get('/destroy/get-stock/{plu}', [DestroyController::class,'getStockByPLU']);
+Route::post('/destroy/submit', [DestroyController::class,'destroy'])->name('destroy.submit');
 
 
 Route::get('/Diskon', [DiscountController::class, 'index'])
