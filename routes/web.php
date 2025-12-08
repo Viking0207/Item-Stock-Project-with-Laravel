@@ -36,6 +36,8 @@ Route::get('/terima', [ReceivingController::class, 'index'])->name('receiving.in
 Route::post('/terima/add', [ReceivingController::class, 'addItem'])->name('receiving.add');
 Route::post('/terima/confirm', [ReceivingController::class, 'confirmAll'])->name('receiving.confirm');
 Route::delete('/terima/{id}', [ReceivingController::class, 'destroy'])->name('receiving.destroy');
+Route::get('/terima/autofill/{plu}', [ReceivingController::class, 'autoFill']);
+
 
 
 Route::get('/Stok', function () {

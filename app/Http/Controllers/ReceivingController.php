@@ -55,6 +55,11 @@ class ReceivingController extends Controller
             // Cek apakah PLU sudah ada di stock
             $existing = Stock::where('plu_barang', $request->plu_barang)->first();
 
+            $tanggalExpired = is_array($request->tanggal_expired)
+                ? $request->tanggal_expired[0] ?? null
+                : $request->tanggal_expired;
+
+
             if ($existing) {
                 // Update qty + harga terakhir
                 $existing->total_quantity += (int) $request->qty;
@@ -68,7 +73,7 @@ class ReceivingController extends Controller
                     'total_quantity' => (int) $request->qty,
                     'harga_terakhir' => (int) $request->harga,
                     'kategori_id'    => 1,
-                    'tanggal_expired' => $request->tanggal_expired ?? null
+                    'tanggal_expired' =>  $tanggalExpired
                 ]);
             }
 
@@ -303,5 +308,36 @@ class ReceivingController extends Controller
         } catch (\Throwable $e) {
             return redirect()->back()->with('error', "Gagal menghapus stok: " . $e->getMessage());
         }
+    }
+
+    // ========================
+    // 5. AUTO FILL DATA STOK
+    // ========================
+    public function autoFill($plu)
+    {
+        // Cari di semua master table (prioritas)
+        $models = [
+            Minuman::class,
+            Makanan::class,
+            Bahan_Masakan::class,
+            Kosmetik::class,
+            Obat::class,
+            Pembersih::class,
+            Perabotan_Rumah::class,
+            Alat_Tulis::class,
+        ];
+
+        foreach ($models as $model) {
+            $data = $model::where('plu_barang', $plu)->first();
+            if ($data) {
+                return response()->json([
+                    'found' => true,
+                    'nama'  => $data->nama_barang,
+                    'harga' => $data->harga_terakhir
+                ]);
+            }
+        }
+
+        return response()->json(['found' => false]);
     }
 }

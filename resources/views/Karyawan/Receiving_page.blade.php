@@ -10,14 +10,19 @@
 
 <body class="bg-light">
 
-    <div class="container py-4">
-
-        <!-- TOMBOL BACK -->
-        <div class="d-flex justify-content-end mt-3">
-            <a href="/Karyawan" class="btn btn-outline-primary d-inline-flex align-items-center gap-2 px-3 rounded-3">
-                Kembali <i class="fa-solid fa-arrow-right"></i>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow">
+        <div class="container">
+            <span class="navbar-brand fw-bold">
+                <i class="fa-solid fa-clipboard-check me-2"></i>Receiving Barang
+            </span>
+            <a href="/Karyawan" class="btn btn-light ms-auto">
+                Kembali <i class="fa-solid fa-arrow-right ms-1"></i>
             </a>
         </div>
+    </nav>
+
+    <div class="container py-4">
 
         <!-- FORM INPUT -->
         <div class="container d-flex justify-content-center pt-3 pb-4">
@@ -233,6 +238,9 @@
         let nama = document.getElementById('nama').value.trim();
         let harga = document.getElementById('harga').value.replace(/[^0-9]/g, "");
         let qty = document.getElementById('qty').value;
+        let expiredInput = document.getElementById('expired').value
+        let expired = expiredInput ? expiredInput : null
+
 
         if (!plu || !nama || !harga || !qty) {
             alert("Isi semua data dulu lee!");
@@ -249,7 +257,8 @@
                 plu_barang: plu,
                 nama_barang: nama,
                 qty: qty,
-                harga: harga
+                harga: harga,
+                tanggal_expired: expired
             })
         });
 
@@ -400,6 +409,20 @@
 
         printWindow.document.close();
     }
+
+
+    document.getElementById('plu').addEventListener('blur', async function() {
+        let plu = this.value.trim()
+        if (!plu) return
+
+        let res = await fetch(`/terima/autofill/${plu}`)
+        let data = await res.json()
+
+        if (data.found) {
+            document.getElementById('nama').value = data.nama
+            document.getElementById('harga').value = "Rp " + Number(data.harga).toLocaleString("id-ID")
+        }
+    })
 </script>
 
 </html>
