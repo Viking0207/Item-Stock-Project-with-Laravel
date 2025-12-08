@@ -11,20 +11,28 @@
 
 <body class="bg-light">
 
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow" 
+    {{-- Navbar --}}
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4 shadow-sm"
         style="background: linear-gradient(90deg, #0d6efd, #6610f2);">
-        <div class="container">
-            <a class="navbar-brand fw-bold">
-                <i class="fa fa-user-tie me-2"></i>Dashboard Karyawan
+        <div class="container py-2">
+
+            <!-- Kiri: Brand -->
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/Karyawan">
+                <i class="fa-solid fa-user-tie fs-4"></i>
+                <span class="fs-5">Dashboard Karyawan</span>
             </a>
 
-            <!-- Tombol Back -->
-            <a href="/Home" class="btn btn-light ms-auto">
-                Kembali <i class="fa fa-arrow-right ms-2"></i> 
-            </a>
+            <!-- Kanan: Logout -->
+            <div class="ms-auto">
+                <a href="/"
+                    class="btn btn-outline-light btn-sm rounded-pill px-4 d-flex align-items-center gap-2">
+                    Logout <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+            </div>
+
         </div>
     </nav>
+
 
     <!-- Menu -->
     <div class="container">
@@ -101,8 +109,13 @@
         }
 
         @keyframes glow {
-            0% { filter: brightness(100%); }
-            100% { filter: brightness(150%); }
+            0% {
+                filter: brightness(100%);
+            }
+
+            100% {
+                filter: brightness(150%);
+            }
         }
 
         .btn {

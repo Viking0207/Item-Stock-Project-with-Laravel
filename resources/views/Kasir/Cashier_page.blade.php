@@ -9,16 +9,29 @@
 
 <body class="bg-light">
 
-    <div class="container py-4">
+    {{-- Navbar --}}
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4 shadow-sm"
+        style="background: linear-gradient(90deg, #0d6efd, #6610f2);">
+        <div class="container py-2">
 
-        <!-- TOMBOL BACK -->
-        <div class="d-flex justify-content-end mt-3">
-            <a href="javascript:history.back()"
-                class="btn btn-outline-primary d-inline-flex align-items-center gap-2 px-3 rounded-3">
-                Kembali <i class="fa-solid fa-arrow-right"></i>
+            <!-- Kiri: Brand -->
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/Karyawan">
+                <i class="fa-solid fa-cash-register fs-4"></i>
+                <span class="fs-5">Dashboard Karyawan</span>
             </a>
-        </div>
 
+            <!-- Kanan: Logout -->
+            <div class="ms-auto">
+                <a href="/"
+                    class="btn btn-outline-light btn-sm rounded-pill px-4 d-flex align-items-center gap-2">
+                    Logout <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+            </div>
+
+        </div>
+    </nav>
+
+    <div class="container">
         <!-- FORM INPUT -->
         <div class="container d-flex justify-content-center pt-3 pb-5">
             <div class="card shadow-sm p-4 rounded-4" style="width: 1100px;">

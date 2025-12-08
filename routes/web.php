@@ -28,8 +28,8 @@ Route::post('/kasir/submit', [KasirController::class, 'submit']);
 Route::get('/kasir/struk/{id}', [KasirController::class, 'struk']);
 
 
-Route::get('/Karyawan', function () {
-    return view('Karyawan/MenuKaryawan_page');
+Route::get('/karyawan', function () {
+    return view('karyawan/MenuKaryawan_page');
 });
 
 Route::get('/terima', [ReceivingController::class, 'index'])->name('receiving.index');
