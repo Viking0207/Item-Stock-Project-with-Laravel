@@ -5,6 +5,7 @@ use App\Http\Controllers\KasirController;
 use App\Http\Controllers\ReceivingController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\CekStokController;
+use App\Http\Controllers\MakananDestroyController;
 // use App\Models\Kategori;
 // use App\Models\Stock;
 
@@ -44,9 +45,12 @@ Route::get('/Stok', function () {
 });
 Route::get('/cek-stok/{plu}', [CekStokController::class, 'cek']);
 
-Route::get('/Destroy', function () {
-    return view('Karyawan/Destroy_page');
-});
+
+Route::get('/destroy', [MakananDestroyController::class, 'index'])->name('destroy.index');
+Route::post('/destroy', [MakananDestroyController::class, 'destroy'])->name('destroy.submit');
+Route::get('/destroy/get-data/{plu}', [MakananDestroyController::class, 'getDataByPLU'])->name('destroy.getData');
+Route::get('/destroy/get-stock/{plu}', [MakananDestroyController::class, 'getStockByPLU']);
+
 
 
 Route::get('/Diskon', [DiscountController::class, 'index'])
