@@ -30,8 +30,8 @@ npm -v
 
 Clone repository ke komputer:
 
-git clone https://github.com/username/nama-project.git
-cd nama-project
+git clone https://github.com/Viking0207/Item-Stock-Project-with-Laravel.git
+cd Item-Stock-Project-with-Laravel
 
 =====================================================================
 
@@ -92,23 +92,35 @@ npm install
 
 Terminal 1 – Jalankan Vite:
 
-npm run dev
+- npm run dev
 
 Terminal 2 – Jalankan Laravel:
 
-php artisan serve
+- php artisan serve
 
 Aplikasi bisa diakses di browser:
 
-http://127.0.0.1:8000
+- http://127.0.0.1:8000
 
 Terminal 3 - Build Apps:
 
-npm run build
+- npm run build
 
 =====================================================================
 
-8. FORMAT PLU (TEMPLATE)
+8. Cara Login Web (Hanya Menggunakan Register secara Manual)
+
+- Akun Karyawan
+Email: AdminVick@gmail.com
+Pass: admin123
+
+- Akun
+Email: CashierVick@gmail.com
+Pass: cash123
+
+=====================================================================
+
+9. FORMAT PLU (TEMPLATE)
 
 Aplikasi menggunakan PLU (Price Look-Up) untuk identifikasi barang.
 
@@ -121,29 +133,28 @@ Keterangan:
 - XXXX = 4 digit setelah 2 digit dari UPC barang
 
 Jenis Kategori:
-[43] = Makanan/Snack
-[44] = Bahan Masakan/Bumbu
-[46] = Minuman
-[47] = Kosmetik
-[58] = Perabotan Rumah
-[59] = Pembersih (Detergen, sabun cuci piring, dll)
-[61] = Alat Tulis Kerja
-[63] = Obat-obatan
+- [43] = Makanan/Snack
+- [44] = Bahan Masakan/Bumbu
+- [46] = Minuman
+- [47] = Kosmetik
+- [58] = Perabotan Rumah
+- [59] = Pembersih (Detergen, sabun cuci piring, dll)
+- [61] = Alat Tulis Kerja
+- [63] = Obat-obatan
 
 Contoh :
 
 GOLDA COFFEE CAPPUCCINO 200 ML
-Kategori: Minuman
-UPC: 8998866202893
-Yang diambil: 89[9886]6202893
+- Kategori: Minuman
+- UPC: 8998866202893
+- Yang diambil: 89[9886]6202893
 
-46 [nomor_kategori]
-9886 [4 digit setelah 2 digit UPC barang]
-
+- 46 [nomor_kategori]
+- 9886 [4 digit setelah 2 digit UPC barang]
 
 =====================================================================
 
-9. CARA CEK STOK
+10. CARA CEK STOK
 
 Contoh cek stok menggunakan query:
 
@@ -153,7 +164,7 @@ Atau menggunakan form input PLU pada tampilan aplikasi.
 
 =====================================================================
 
-10. TROUBLESHOOTING
+11. TROUBLESHOOTING
 
 Jika terjadi error:
 
@@ -169,7 +180,7 @@ storage/logs/laravel.log
 
 =====================================================================
 
-11. CATATAN PENTING
+12. CATATAN PENTING
 
 - Jangan matikan npm run dev saat aplikasi berjalan
 - Jangan mengubah struktur database tanpa update kode
@@ -177,13 +188,13 @@ storage/logs/laravel.log
 
 =====================================================================
 
-12. AUTHOR
+13. AUTHOR
 
 Dikembangkan oleh:
 (Viking0207)
 
 =====================================================================
 
-13. LISENSI
+14. LISENSI
 
 Project ini boleh dipake asalkan dimodif lagi (Jangan Copy paste mentah-mentah euyy!).
