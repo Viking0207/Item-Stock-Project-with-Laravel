@@ -22,7 +22,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-danger mb-4 shadow">
         <div class="container">
             <a class="navbar-brand fw-bold"><i class="fa fa-fire me-2"></i>Destroy Barang</a>
-            <a href="/Karyawan" class="btn btn-light ms-auto">Kembali <i class="fa fa-arrow-right"></i></a>
+            <a href="/karyawan" class="btn btn-light ms-auto">Kembali <i class="fa fa-arrow-right"></i></a>
         </div>
     </nav>
 
@@ -130,9 +130,10 @@
             <td>${item.plu}</td>
             <td>${item.nama}</td>
             <td>${item.qty}</td>
-            <td><button class="btn btn-sm btn-outline-danger" onclick="hapus(${i})">
-                <i class="fa fa-x"></i>
-                </button><
+            <td>
+                <button class="btn btn-sm btn-outline-danger" onclick="hapus(${i})">
+                    <i class="fa fa-x"></i>
+                </button>
             </td>
         </tr>`;
         });

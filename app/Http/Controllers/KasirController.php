@@ -141,7 +141,7 @@ class KasirController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Gagal transaksi: '.$e->getMessage()
+                'message' => 'Gagal transaksi: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -155,5 +155,27 @@ class KasirController extends Controller
         $details = DB::table('transaksi_detail')->where('transaksi_id', $id)->get();
 
         return view('kasir.struk', compact('transaksi', 'details'));
+    }
+
+    // Cek stok sisa barang
+    public function checkStock(Request $request)
+    {
+        $plu = $request->plu;
+        foreach ($this->kategoriList as $kategori => $model) {
+            $barang = $model::where('plu_barang', $plu)->first();
+            if ($barang) {
+                $batchModel = $this->batchList[$kategori];
+                $totalStok = $batchModel::where('barang_id', $barang->id)->sum('quantity');
+                return response()->json([
+                    'status' => 'ok',
+                    'stok' => $totalStok
+                ]);
+            }
+        }
+
+        return response()->json([
+            'status' => 'not_found',
+            'stok' => 0
+        ]);
     }
 }

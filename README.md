@@ -1,59 +1,171 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Cek Stok Barang (Laravel + Supabase)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi ini digunakan untuk mengecek stok barang berdasarkan PLU.
+Backend menggunakan Laravel, frontend asset menggunakan Vite (npm),
+dan database menggunakan PostgreSQL dari Supabase.
 
-## About Laravel
+=====================================================================
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## TUTORIAL INSTALL & MENJALANKAN APLIKASI (WAJIB IKUT URUTAN)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+=====================================================================
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. PERSIAPAN AWAL
 
-## Learning Laravel
+Pastikan di komputer sudah terinstall:
+- PHP
+- Composer
+- Node.js + NPM
+- Git
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Cek versi (opsional):
+php -v
+composer -V
+node -v
+npm -v
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+=====================================================================
 
-## Laravel Sponsors
+2. CLONE PROJECT
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Clone repository ke komputer:
 
-### Premium Partners
+git clone https://github.com/username/nama-project.git
+cd nama-project
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+=====================================================================
 
-## Contributing
+3. INSTALL DEPENDENCY LARAVEL
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Jalankan perintah berikut:
 
-## Code of Conduct
+composer install
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Copy file environment:
 
-## Security Vulnerabilities
+cp .env.example .env
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Generate app key:
 
-## License
+php artisan key:generate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+=====================================================================
+
+4. KONFIGURASI DATABASE SUPABASE
+
+Aplikasi menggunakan database Supabase (PostgreSQL) yang sudah disiapkan.
+
+Buka file .env lalu isi:
+
+DB_CONNECTION=pgsql
+DB_HOST=xxxxx.supabase.co
+DB_PORT=5432
+DB_DATABASE=nama_database
+DB_USERNAME=postgres
+DB_PASSWORD=password_database
+
+=====================================================================
+
+5. IMPORT DATABASE
+
+Database sudah tersedia dalam bentuk file .sql.
+
+Import database dengan salah satu cara berikut:
+
+- Melalui Supabase Dashboard → SQL Editor → paste isi file .sql → Run
+ATAU
+- Melalui terminal:
+
+psql -h host_supabase -U postgres -d nama_database -f database.sql
+
+=====================================================================
+
+6. INSTALL DEPENDENCY FRONTEND (VITE)
+
+Install dependency frontend:
+
+npm install
+
+=====================================================================
+
+7. MENJALANKAN APLIKASI (WAJIB 2 TERMINAL)
+
+Terminal 1 – Jalankan Vite:
+
+npm run dev
+
+Terminal 2 – Jalankan Laravel:
+
+php artisan serve
+
+Aplikasi bisa diakses di browser:
+
+http://127.0.0.1:8000
+
+=====================================================================
+
+8. FORMAT PLU (TEMPLATE)
+
+Aplikasi menggunakan PLU (Price Look-Up) untuk identifikasi barang.
+
+Format PLU:
+
+[KK][XXXX][YY]
+
+Keterangan:
+- KK   = Kode kategori barang
+- XXXX = Nomor unik barang
+- YY   = Variasi / batch (opsional)
+
+Contoh (dummy):
+
+43968601
+
+Detail logika pembuatan PLU akan dijelaskan terpisah.
+
+=====================================================================
+
+9. CARA CEK STOK
+
+Contoh cek stok menggunakan query:
+
+/cek-stock?plu=43968601
+
+Atau menggunakan form input PLU pada tampilan aplikasi.
+
+=====================================================================
+
+10. TROUBLESHOOTING
+
+Jika terjadi error:
+
+php artisan optimize:clear
+
+Jika masih bermasalah:
+- Pastikan npm run dev masih berjalan
+- Pastikan php artisan serve masih berjalan
+- Pastikan koneksi Supabase benar
+
+Cek log Laravel:
+storage/logs/laravel.log
+
+=====================================================================
+
+11. CATATAN PENTING
+
+- Jangan matikan npm run dev saat aplikasi berjalan
+- Jangan mengubah struktur database tanpa update kode
+- PLU harus sesuai format
+
+=====================================================================
+
+12. AUTHOR
+
+Dikembangkan oleh:
+(Nama Kamu)
+
+=====================================================================
+
+13. LISENSI
+
+Project ini bebas digunakan untuk pembelajaran dan pengembangan pribadi.

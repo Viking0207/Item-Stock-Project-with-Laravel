@@ -155,16 +155,44 @@
             alert('Data belum valid');
             return;
         }
-        cart.push({
-            plu: plu.value,
-            nama: nama.value,
-            harga: hargaAsli,
-            qty: Number(qty.value)
-        });
-        renderTable();
-        plu.value = nama.value = harga.value = qty.value = '';
-        hargaAsli = 0;
+
+        // Ambil stok terakhir dari backend sebelum menambahkan
+        fetch(`/kasir/check-stock?plu=${plu.value}`)
+            .then(res => res.json())
+            .then(d => {
+                if (d.status === 'ok') {
+                    const stokTersedia = d.stok;
+
+                    if (stokTersedia <= 0) {
+                        alert(`Stok barang "${nama.value}" habis!`);
+                        return;
+                    }
+
+                    if (Number(qty.value) > stokTersedia) {
+                        alert(`Jumlah melebihi stok tersedia. Stok tersisa: ${stokTersedia}`);
+                        return;
+                    }
+
+                    // Jika valid, tambah ke cart
+                    cart.push({
+                        plu: plu.value,
+                        nama: nama.value,
+                        harga: hargaAsli,
+                        qty: Number(qty.value)
+                    });
+                    renderTable();
+
+                    // Reset form
+                    plu.value = nama.value = harga.value = qty.value = '';
+                    hargaAsli = 0;
+
+                } else {
+                    alert('Gagal cek stok');
+                }
+            })
+            .catch(() => alert('Gagal cek stok'));
     });
+
 
     // Render tabel
     function renderTable() {

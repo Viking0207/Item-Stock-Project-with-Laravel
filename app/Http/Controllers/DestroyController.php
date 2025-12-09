@@ -30,26 +30,17 @@ class DestroyController extends Controller
         return view('Karyawan.destroy_page');
     }
 
+    // Ambil data nama barang berdasarkan PLU
     public function getDataByPLU($plu)
     {
-        $tables = [
-            Makanan::class,
-            Bahan_Masakan::class,
-            Minuman::class,
-            Kosmetik::class,
-            Perabotan_Rumah::class,
-            Pembersih::class,
-            Alat_Tulis::class,
-            Obat::class
-        ];
-
+        $tables = $this->getAllModels();
         foreach ($tables as $table) {
-            $item = $table::where('plu_barang', $plu)->first();
+            $item = $table['model']::where('plu_barang', $plu)->first();
             if ($item) {
                 return response()->json([
                     'success' => true,
                     'nama_barang' => $item->nama_barang,
-                    'kategori' => strtolower(class_basename($table)) // optional, biar tau kategorinya
+                    'kategori' => $table['name']
                 ]);
             }
         }
@@ -57,26 +48,17 @@ class DestroyController extends Controller
         return response()->json(['success' => false, 'nama_barang' => '']);
     }
 
+    // Ambil total stock berdasarkan PLU
     public function getStockByPLU($plu)
     {
-        $tables = [
-            Makanan::class,
-            Bahan_Masakan::class,
-            Minuman::class,
-            Kosmetik::class,
-            Perabotan_Rumah::class,
-            Pembersih::class,
-            Alat_Tulis::class,
-            Obat::class
-        ];
-
+        $tables = $this->getAllModels();
         foreach ($tables as $table) {
-            $item = $table::where('plu_barang', $plu)->first();
+            $item = $table['model']::where('plu_barang', $plu)->first();
             if ($item) {
                 return response()->json([
                     'success' => true,
                     'total_quantity' => $item->total_quantity,
-                    'kategori' => strtolower(class_basename($table))
+                    'kategori' => $table['name']
                 ]);
             }
         }
@@ -84,10 +66,10 @@ class DestroyController extends Controller
         return response()->json(['success' => false, 'total_quantity' => 0]);
     }
 
+    // Submit destroy
     public function destroy(Request $request)
     {
-        $items = $request->input('items'); // array [{plu, qty}]
-
+        $items = $request->input('items'); // [{plu, qty}]
         if (!$items || !is_array($items)) {
             return response()->json([
                 'success' => false,
@@ -95,18 +77,52 @@ class DestroyController extends Controller
             ]);
         }
 
-        // Proses pengurangan stok
-        foreach ($items as $item) {
-            $plu = $item['plu'];
-            $qty = $item['qty'];
+        DB::transaction(function() use ($items) {
+            $tables = $this->getAllModels();
 
-            $barang = Makanan::where('plu_barang', $plu)->first(); // contoh Makanan, sesuaikan model
-            if (!$barang) continue;
+            foreach ($items as $item) {
+                $plu = $item['plu'];
+                $qtyToDestroy = $item['qty'];
 
-            $barang->total_quantity -= $qty;
-            if ($barang->total_quantity < 0) $barang->total_quantity = 0;
-            $barang->save();
-        }
+                // Cari model dan batch
+                $model = null;
+                $batchClass = null;
+                foreach ($tables as $t) {
+                    $tmp = $t['model']::where('plu_barang', $plu)->first();
+                    if ($tmp) {
+                        $model = $tmp;
+                        $batchClass = $t['batch'];
+                        break;
+                    }
+                }
+
+                if (!$model || !$batchClass) continue;
+
+                // Ambil semua batch yang quantity > 0, urut FEFO
+                $batches = $model->batches()
+                    ->where('quantity', '>', 0)
+                    ->orderBy('expired_date', 'asc')
+                    ->get();
+
+                foreach ($batches as $batch) {
+                    if ($qtyToDestroy <= 0) break;
+
+                    if ($batch->quantity >= $qtyToDestroy) {
+                        $batch->quantity -= $qtyToDestroy;
+                        $batch->save();
+                        $qtyToDestroy = 0;
+                    } else {
+                        $qtyToDestroy -= $batch->quantity;
+                        $batch->quantity = 0;
+                        $batch->save();
+                    }
+                }
+
+                // Update total_quantity di tabel utama
+                $model->total_quantity = $model->batches()->sum('quantity');
+                $model->save();
+            }
+        });
 
         return response()->json([
             'success' => true,
@@ -114,34 +130,18 @@ class DestroyController extends Controller
         ]);
     }
 
-
-    private function getModel($kategori)
+    // Helper: daftar semua model utama dan batch
+    private function getAllModels()
     {
-        $map = [
-            'makanan' => Makanan::class,
-            'bahan_masakan' => Bahan_Masakan::class,
-            'minuman' => Minuman::class,
-            'kosmetik' => Kosmetik::class,
-            'perabotan_rumah' => Perabotan_Rumah::class,
-            'pembersih' => Pembersih::class,
-            'alat_tulis' => Alat_Tulis::class,
-            'obat' => Obat::class
+        return [
+            ['name'=>'makanan', 'model'=>Makanan::class, 'batch'=>MakananBatch::class],
+            ['name'=>'bahan_masakan', 'model'=>Bahan_Masakan::class, 'batch'=>BahanMasakanBatch::class],
+            ['name'=>'minuman', 'model'=>Minuman::class, 'batch'=>MinumanBatch::class],
+            ['name'=>'kosmetik', 'model'=>Kosmetik::class, 'batch'=>KosmetikBatch::class],
+            ['name'=>'perabotan_rumah', 'model'=>Perabotan_Rumah::class, 'batch'=>PerabotanRumahBatch::class],
+            ['name'=>'pembersih', 'model'=>Pembersih::class, 'batch'=>PembersihBatch::class],
+            ['name'=>'alat_tulis', 'model'=>Alat_Tulis::class, 'batch'=>AlatTulisBatch::class],
+            ['name'=>'obat', 'model'=>Obat::class, 'batch'=>ObatBatch::class],
         ];
-        return $map[strtolower($kategori)] ?? null;
-    }
-
-    private function getBatchModel($kategori)
-    {
-        $map = [
-            'makanan' => MakananBatch::class,
-            'bahan_masakan' => BahanMasakanBatch::class,
-            'minuman' => MinumanBatch::class,
-            'kosmetik' => KosmetikBatch::class,
-            'perabotan_rumah' => PerabotanRumahBatch::class,
-            'pembersih' => PembersihBatch::class,
-            'alat_tulis' => AlatTulisBatch::class,
-            'obat' => ObatBatch::class
-        ];
-        return $map[strtolower($kategori)] ?? null;
     }
 }

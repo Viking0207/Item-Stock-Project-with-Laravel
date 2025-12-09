@@ -17,7 +17,7 @@
             <span class="navbar-brand fw-bold">
                 <i class="fa-solid fa-tags me-2"></i>Diskon Barang
             </span>
-            <a href="/Karyawan" class="btn btn-light ms-auto">
+            <a href="/karyawan" class="btn btn-light ms-auto">
                 Kembali <i class="fa-solid fa-arrow-right ms-1"></i>
             </a>
         </div>

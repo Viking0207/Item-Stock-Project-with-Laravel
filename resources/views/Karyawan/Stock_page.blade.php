@@ -22,7 +22,7 @@
             <span class="navbar-brand fw-bold">
                 <i class="fa fa-warehouse me-2"></i>Cek Stok Barang
             </span>
-            <a href="/Karyawan" class="btn btn-light ms-auto">
+            <a href="/karyawan" class="btn btn-light ms-auto">
                 Kembali <i class="fa fa-arrow-right ms-2"></i>
             </a>
         </div>
