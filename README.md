@@ -102,6 +102,10 @@ Aplikasi bisa diakses di browser:
 
 http://127.0.0.1:8000
 
+Terminal 3 - Build Apps:
+
+npm run build
+
 =====================================================================
 
 8. FORMAT PLU (TEMPLATE)
@@ -110,18 +114,32 @@ Aplikasi menggunakan PLU (Price Look-Up) untuk identifikasi barang.
 
 Format PLU:
 
-[KK][XXXX][YY]
+[KK][XXXX]
 
 Keterangan:
 - KK   = Kode kategori barang
-- XXXX = Nomor unik barang
-- YY   = Variasi / batch (opsional)
+- XXXX = 4 digit setelah 2 digit dari UPC barang
 
-Contoh (dummy):
+Jenis Kategori:
+[43] = Makanan/Snack
+[44] = Bahan Masakan/Bumbu
+[46] = Minuman
+[47] = Kosmetik
+[58] = Perabotan Rumah
+[59] = Pembersih (Detergen, sabun cuci piring, dll)
+[61] = Alat Tulis Kerja
+[63] = Obat-obatan
 
-43968601
+Contoh :
 
-Detail logika pembuatan PLU akan dijelaskan terpisah.
+GOLDA COFFEE CAPPUCCINO 200 ML
+Kategori: Minuman
+UPC: 8998866202893
+Yang diambil: 89[9886]6202893
+
+46 [nomor_kategori]
+9886 [4 digit setelah 2 digit UPC barang]
+
 
 =====================================================================
 
@@ -162,10 +180,10 @@ storage/logs/laravel.log
 12. AUTHOR
 
 Dikembangkan oleh:
-(Nama Kamu)
+(Viking0207)
 
 =====================================================================
 
 13. LISENSI
 
-Project ini bebas digunakan untuk pembelajaran dan pengembangan pribadi.
+Project ini boleh dipake asalkan dimodif lagi (Jangan Copy paste mentah-mentah euyy!).
