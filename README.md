@@ -157,7 +157,6 @@ GOLDA COFFEE CAPPUCCINO 200 ML
 =====================================================================
 
 10. CARA CEK STOK
-10. CARA CEK STOK
 
 Contoh cek stok menggunakan query:
 
@@ -167,7 +166,6 @@ Atau menggunakan form input PLU pada tampilan aplikasi.
 
 =====================================================================
 
-11. TROUBLESHOOTING
 11. TROUBLESHOOTING
 
 Jika terjadi error:
@@ -185,8 +183,7 @@ storage/logs/laravel.log
 =====================================================================
 
 12. CATATAN PENTING
-12. CATATAN PENTING
-
+    
 - Jangan matikan npm run dev saat aplikasi berjalan
 - Jangan mengubah struktur database tanpa update kode
 - PLU harus sesuai format
@@ -194,14 +191,12 @@ storage/logs/laravel.log
 =====================================================================
 
 13. AUTHOR
-13. AUTHOR
-
+    
 Dikembangkan oleh:
 (Viking0207)
 
 =====================================================================
 
-14. LISENSI
 14. LISENSI
 
 Project ini boleh dipake asalkan dimodif lagi (Jangan Copy paste mentah-mentah euyy!).
